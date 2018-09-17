@@ -1,6 +1,6 @@
 language: csharp
 solution: PreventReboot.sln
 
-script:
-  - dotnet restore PreventReboot.sln
-  - dotnet build PreventReboot.sln
+install:
+  - nuget install MSBuild.ILMerge.Task -Version 1.0.5
+  - nuget restore PreventReboot.sln
