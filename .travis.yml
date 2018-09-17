@@ -1,5 +1,6 @@
 language: csharp
 solution: PreventReboot.sln
 
-install:
-  - nuget restore PreventReboot.sln
+script:
+  - dotnet restore PreventReboot.sln
+  - dotnet build PreventReboot.sln
