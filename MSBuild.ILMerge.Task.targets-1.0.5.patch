@@ -1,16 +1,6 @@
-From 24a08c158c9bab495093b9ae582d5140456c8459 Mon Sep 17 00:00:00 2001
-From: jakenjarvis <jaken.jarvis@gmail.com>
-Date: Mon, 17 Sep 2018 18:21:36 +0900
-Subject: [PATCH] test2
-
----
- MSBuild.ILMerge.Task.targets | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MSBuild.ILMerge.Task.targets b/MSBuild.ILMerge.Task.targets
-index aab770f..dd4aa01 100644
---- a/MSBuild.ILMerge.Task.targets
-+++ b/MSBuild.ILMerge.Task.targets
+diff -uprN ./PreventReboot_a/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets ./PreventReboot_b/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets
+--- ./PreventReboot_a/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets	2016-07-11 13:39:00.000000000 +0900
++++ ./PreventReboot_b/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets	2018-09-17 21:34:05.000000000 +0900
 @@ -32,7 +32,7 @@
      <Message Text="Transitive merge" Importance="high" Condition="$(ILMergeTransitive) == 'true'" />
  
@@ -29,6 +19,3 @@ index aab770f..dd4aa01 100644
        <Output TaskParameter="Include" ItemName="UnmergedAssemblies"/>
      </CreateItem>
  
--- 
-2.18.0.windows.1
-
