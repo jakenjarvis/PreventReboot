@@ -1,9 +1,14 @@
 language: csharp
 solution: PreventReboot.sln
 
+sudo: required
+dist: trusty
+
 install:
   - nuget restore PreventReboot.sln
-  - tree -d
   - cat /home/travis/build/jakenjarvis/PreventReboot/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets
+
+  - sudo apt install -y tree
+  - tree -d
 
   - patch -p1 /home/travis/build/jakenjarvis/PreventReboot/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets < ./MSBuild.ILMerge.Task.targets_1.0.5.patch
