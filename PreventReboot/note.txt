@@ -100,3 +100,52 @@ If I run my script which includes:
 Those settings are shown in the GUI after I hit “Check for updates”.
  False alarm, for once. 🙂
 
+
+
+
+
+
+
+
+
+
+deploy:
+  provider: releases
+  api_key: "GITHUB OAUTH TOKEN"
+  file: "FILE TO UPLOAD"
+  skip_cleanup: true
+  on:
+    tags: true
+
+
+
+
+
+
+    before_deploy:
+      # Set up git user name and tag this commit
+      - git config --local user.name "YOUR GIT USER NAME"
+      - git config --local user.email "YOUR GIT USER EMAIL"
+      - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
+    deploy:
+      provider: releases
+      api_key: "GITHUB OAUTH TOKEN"
+      file: "FILE TO UPLOAD"
+      skip_cleanup: true
+
+      overwrite: true
+
+
+
+
+deploy:
+  provider: releases
+  api_key: "GITHUB OAUTH TOKEN"
+  file_glob: true
+  file: directory/*
+  skip_cleanup: true
+  on:
+    tags: true
+
+
+
