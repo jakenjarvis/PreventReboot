@@ -1,0 +1,102 @@
+﻿HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU の下で AuOptions
+4
+
+
+NoAutoRebootWithLoggedOnUsers 
+1
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer
+ DisableAutomaticApplicationShutdown（REG_DWORD）
+ １：有効
+ ０：無効
+
+
+--------
+@echo off
+set NOW_HH=%TIME:~0,2%
+
+set /a START_TIME=NOW_HH-5
+set /a END_TIME=NOW_HH+5
+
+if %START_TIME% lss 0 (
+set /a START_TIME=%START_TIME%+24
+)
+if %END_TIME% gtr 24 (
+ set /a END_TIME=%END_TIME%-24
+)
+
+reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v ActiveHoursStart /d %START_TIME% /t REG_DWORD /f
+reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v ActiveHoursEnd /d %END_TIME% /t REG_DWORD /f
+--------
+
+
+
+
+
+https://qiita.com/minamijoyo/items/8cdb1b3659c703f60969
+schtasks /create /tn cool-task /tr "C:\cool.bat" /sc onlogon /rl highest /F
+/sc HOURLY
+
+
+https://github.com/dahall/TaskScheduler
+
+
+powershell -WindowStyle Hidden -command "C:\Powershell\hoge.ps1"
+powershell -WindowStyle Hidden -ExecutionPolicy Bypass -command ".\hoge.ps1"
+
+
+
+----task-scheduler.js----
+wsShell = WScript.createObject("WScript.Shell");
+retCode = wsShell.Run("\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -File \"" + WScript.Arguments.Item(0)+"\"",0,true);
+WScript.Quit(retCode);
+----
+
+
+
+
+$Trigger = New-ScheduledTaskTrigger -Once -at "00:00:00"-RepetitionInterval "00:15:00" -RepetitionDuration([timespan]::MaxValue)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Actually I checked this again, using RegShot.
+ The keys are in the same spot.
+ The new keys you reference I believe are only visual and do nothing. They’re basically placeholders to tell the GUI what to display.
+
+If I run my script which includes:
+
+
+# Select the Windows readiness level for the updates you want to receive:
+ # 4. Semi-Annual Channel
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v BranchReadinessLevel /t REG_DWORD /d 32 /f
+ # After a Preview Build or Feature Update is released, defer receiving it for this many days:
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v DeferFeatureUpdatesPeriodInDays /t REG_DWORD /d 365 /f
+ # Select when Quality Updates are received
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v DeferQualityUpdates /t REG_DWORD /d 1 /f
+ # After a quality update is released, defer receiving it for this many days:
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v DeferQualityUpdatesPeriodInDays /t REG_DWORD /d 30 /f
+ # Do not include drivers with Windows Updates
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f
+ # Turn off auto-restart for updates during active hours
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v SetActiveHours /t REG_DWORD /d 1 /f
+ # Active Hours
+ # Start:
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v ActiveHoursStart /t REG_DWORD /d 1800 /f
+ # End:
+ REG ADD “HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate” /v ActiveHoursEnd /t REG_DWORD /d 1200 /f
+
+Those settings are shown in the GUI after I hit “Check for updates”.
+ False alarm, for once. 🙂
+
