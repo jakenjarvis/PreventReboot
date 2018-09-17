@@ -6,6 +6,5 @@ dist: trusty
 
 install:
   - nuget restore PreventReboot.sln
-
-  - patch -ul -p2 < ./MSBuild.ILMerge.Task.targets_1.0.5.patch
+  - cp ./MSBuild.ILMerge.Task.targets ./packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets
 
