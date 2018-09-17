@@ -3,5 +3,7 @@ solution: PreventReboot.sln
 
 install:
   - nuget restore PreventReboot.sln
-  - patch -u -p1 /home/travis/build/jakenjarvis/PreventReboot/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets < ./MSBuild.ILMerge.Task.targets_1.0.5.patch
+  - tree -d
+  - cat /home/travis/build/jakenjarvis/PreventReboot/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets
 
+  - patch -p1 /home/travis/build/jakenjarvis/PreventReboot/packages/MSBuild.ILMerge.Task.1.0.5/build/MSBuild.ILMerge.Task.targets < ./MSBuild.ILMerge.Task.targets_1.0.5.patch
