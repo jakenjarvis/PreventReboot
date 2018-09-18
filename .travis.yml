@@ -1,23 +1,21 @@
 language: csharp
 solution: PreventReboot.sln
 
-sudo: required
 dist: trusty
+sudo: required
 
 install:
-  - nuget install ILMerge -Version 2.14.1208 -OutputDirectory ./packages
   - nuget restore PreventReboot.sln
 
-
-
 before_deploy:
+  - zip -q PreventReboot-$TRAVIS_TAG.zip -r ./PreventReboot/bin/Release/PreventReboot.exe
 
 deploy:
   provider: releases
   api_key:
     secure: D8Boi2wUWlBDStQRYCxt4m99WDFyjbf3rLL2Y113Mu2M1mr1aEGdXLFwXPoV8iAlP/2D4xQpITwkK3Wt6tUXkWez40Tprirab3OMLueMbL3HNIdqhHbhCE2DvC47DfL26QXrhDTqMSWKeVIg/47q4KTsw31VsaraJ1qkRUluOEP84GPSrK0gyKAMwru41MbIddeQM2WM2FbYnRxLYkaxbpLmsVOpM+76saVKiPgh9RcUOHDwdTtDGVSyefnbyX7M/y9Gu70msmCWiasKwTg6dmBbFQxxUUr9x5JagHTpk1e3JEQlMHjHKmIZ3Cntg+luB3VpQr1+4VzjXKrT1zP49x5xA1m/Sd/Xc7ufow1UWHNpW8ufEVPx4Mhk4WMKrwRI4Lg1WLMOVzAZefxQPSgWY7lpPj9kXuRbrLwaXScPMz9nW0lCnTyROa3WxSL5v2OfP0Nr81b1C0FxyxU/D8DEWvnPIBwkJ8rF3ug0LBVvQWlpAbN2Q/f1lkd7t57i9gx7g2Qk+skwJxyE7FO2PWuWGd5Cjnqej4bkaRIq+LOuD8c0PUtQWrBOw7bko6xUm+U/H2Eb/PYLBZ/QqbnJQQcqJkHq0SadxCqsi4BEUD0nAuHiIDenxkFbFKqp+S21G6rwF7WwXXc7VP4DOjmc9fmuGqd9Af/dQO6n0GU//BGWaVU=
   skip_cleanup: true
-  file: "PreventReboot/bin/Release/PreventReboot.exe"
+  file: PreventReboot-$TRAVIS_TAG.zip
   overwrite: true
   on:
     tags: true
