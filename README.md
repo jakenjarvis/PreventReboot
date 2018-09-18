@@ -13,7 +13,7 @@ This will cause the OS to reboot while you are away from computer so that you wi
  - This program does not communicate with the Internet.
 
 ## Install
- 1. [Download(https://github.com/jakenjarvis/PreventReboot/releases/latest)] the program and extract the ZIP file. Deploy to your arbitrary folder. However, do not move the EXE installation folder after installation.
+ 1. [Download(latest)](https://github.com/jakenjarvis/PreventReboot/releases/latest) the program and extract the ZIP file. Deploy to your arbitrary folder. However, do not move the EXE installation folder after installation.
  2. At the command prompt, execute the following command. This will register this program call once an hour to the Task Scheduler.
 
 ```command line
