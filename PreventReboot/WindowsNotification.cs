@@ -1,6 +1,8 @@
 ﻿using Windows.UI.Notifications;
 using System.Drawing;
 using Windows.Data.Xml.Dom;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace PreventReboot
 {
@@ -9,12 +11,13 @@ namespace PreventReboot
 
     public class WindowsNotification
     {
-        // ----- ToastImageAndText01 -----
+        // ----- ToastImageAndText02 -----
         // <toast>
         //     <visual>
-        //         <binding template="ToastImageAndText01">
+        //         <binding template="ToastImageAndText02">
         //             <image id="1" src=""/>
         //             <text id="1"></text>
+        //             <text id="2"></text>
         //         </binding>
         //     </visual>
         // </toast>
@@ -26,9 +29,9 @@ namespace PreventReboot
             this.AppUserModelID = appUserModelID;
         }
 
-        public void Show(string message)
+        public void Show(string title, string message)
         {
-            var template = ToastTemplateType.ToastImageAndText01;
+            var template = ToastTemplateType.ToastImageAndText02;
             var content = ToastNotificationManager.GetTemplateContent(template);
             //string xml = content.GetXml();
 
@@ -37,17 +40,18 @@ namespace PreventReboot
             //placement.Value = "appLogoOverride";
             //image.SetAttributeNode(placement);
 
-            //XmlAttribute src = (XmlAttribute)image.Attributes.GetNamedItem("src");
-            //src.Value = "Assets/Images/app_icon.png";
+            var appIconImagePath = Path.Combine(Path.GetTempPath(), "app_icon.png");
+            using (Image img = new Bitmap(Properties.Resources.app_icon))
+            {
+                img.Save(appIconImagePath, ImageFormat.Png);
+            }
 
-            //var bmp = new Bitmap(Properties.Resources.app_icon);
-            //var path = Path.GetTempPath();
-            //Properties.Resources.app_icon.Save(path);
+            XmlAttribute src = (XmlAttribute)image.Attributes.GetNamedItem("src");
+            src.Value = appIconImagePath;
 
-            // Assets/Images/YourOwnImage.png
-
-            XmlElement text = (XmlElement)content.GetElementsByTagName("text").Item(0);
-            text.AppendChild(content.CreateTextNode(message));
+            XmlNodeList nodes = content.GetElementsByTagName("text");
+            ((XmlElement)nodes.Item(0)).AppendChild(content.CreateTextNode(title));
+            ((XmlElement)nodes.Item(1)).AppendChild(content.CreateTextNode(message));
 
             ToastNotification toast = new ToastNotification(content);
             var notifier = ToastNotificationManager.CreateToastNotifier(this.AppUserModelID);

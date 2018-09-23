@@ -60,6 +60,7 @@ namespace PreventReboot
                     var settings = optionSettings.HasValue();
                     var version = optionVersion.HasValue();
 
+
                     PreventRebootMain preventRebootMain = new PreventRebootMain();
                     if (install)
                     {

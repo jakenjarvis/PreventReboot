@@ -2,7 +2,6 @@
 using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Security.Principal;
 
 namespace PreventReboot
@@ -164,7 +163,7 @@ namespace PreventReboot
             // Notification
             string appUserModelID = Program.generateDefaultAppUserModelID();
             var notification = new WindowsNotification(appUserModelID);
-            notification.Show("TEST");
+            notification.Show("PreventReboot", $"StartTime: {dtStartTime.Hour} / EndTime: {dtEndTime.Hour}");
 
             return result;
         }

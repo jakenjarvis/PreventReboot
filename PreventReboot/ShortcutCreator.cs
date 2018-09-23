@@ -130,11 +130,11 @@ namespace PreventReboot
 
     internal static class ResultChecker
     {
-        internal static void VerifyAndThrow(UInt32 hresult)
+        internal static void VerifyAndThrow(string name, UInt32 hresult)
         {
             if (hresult > 1)
             {
-                throw new Exception("Failed with HRESULT: " + hresult.ToString("X"));
+                throw new Exception("Failed with " + name + "() HRESULT: " + hresult.ToString("X"));
             }
         }
     }
@@ -156,13 +156,68 @@ namespace PreventReboot
         public string generateDefaultLinkPath()
         {
             string exeName = Path.GetFileNameWithoutExtension(this.ExePath);
-            return this.generateLinkPath(exeName);
+            return this.generateLinkPath(exeName, exeName);
         }
 
         public string generateLinkPath(string title)
         {
+            string exeName = Path.GetFileNameWithoutExtension(this.ExePath);
+            return this.generateLinkPath(exeName, title);
+        }
+
+        public string generateLinkPath(string folder, string title)
+        {
             string programsStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
-            return Path.Combine(programsStartMenu, title + ".lnk");
+            return Path.Combine(programsStartMenu, folder, title + ".lnk");
+        }
+
+        public void create(string shortcutPath = "")
+        {
+            if (!string.IsNullOrEmpty(shortcutPath))
+            {
+                if(!shortcutPath.Contains("\\"))
+                {
+                    this.ShortcutPath = this.generateLinkPath(shortcutPath);
+                }
+                else
+                {
+                    this.ShortcutPath = shortcutPath;
+                }
+            }
+
+            if (string.IsNullOrEmpty(this.ShortcutPath))
+            {
+                this.ShortcutPath = this.generateDefaultLinkPath();
+            }
+
+            string folderPath = Path.GetDirectoryName(this.ShortcutPath);
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Find the path to the current executable
+            IShellLinkW newShortcut = (IShellLinkW)new CShellLink();
+
+            // Create a shortcut to the exe
+            ResultChecker.VerifyAndThrow("SetPath", newShortcut.SetPath(this.ExePath));
+            ResultChecker.VerifyAndThrow("SetArguments", newShortcut.SetArguments(this.Arguments));
+
+            // Open the shortcut property store, set the AppUserModelId property
+            IPropertyStore newShortcutProperties = (IPropertyStore)newShortcut;
+
+            if (!string.IsNullOrEmpty(this.AppUserModelID))
+            {
+                using (PropVariant appId = new PropVariant(this.AppUserModelID))
+                {
+                    ResultChecker.VerifyAndThrow("SetValue", newShortcutProperties.SetValue(SystemProperties.System.AppUserModel.ID, appId));
+                    ResultChecker.VerifyAndThrow("Commit", newShortcutProperties.Commit());
+                }
+            }
+
+            // Commit the shortcut to disk
+            IPersistFile newShortcutSave = (IPersistFile)newShortcut;
+            ResultChecker.VerifyAndThrow("Save", newShortcutSave.Save(this.ShortcutPath, true));
         }
 
         public void delete(string shortcutPath = "")
@@ -188,50 +243,14 @@ namespace PreventReboot
             {
                 File.Delete(this.ShortcutPath);
             }
+
+            string folderPath = Path.GetDirectoryName(this.ShortcutPath);
+            if (Directory.Exists(folderPath))
+            {
+                Directory.Delete(folderPath, true);
+            }
         }
 
-        public void create(string shortcutPath = "")
-        {
-            if (!string.IsNullOrEmpty(shortcutPath))
-            {
-                if(!shortcutPath.Contains("\\"))
-                {
-                    this.ShortcutPath = this.generateLinkPath(shortcutPath);
-                }
-                else
-                {
-                    this.ShortcutPath = shortcutPath;
-                }
-            }
-
-            if (string.IsNullOrEmpty(this.ShortcutPath))
-            {
-                this.ShortcutPath = this.generateDefaultLinkPath();
-            }
-
-            // Find the path to the current executable
-            IShellLinkW newShortcut = (IShellLinkW)new CShellLink();
-
-            // Create a shortcut to the exe
-            ResultChecker.VerifyAndThrow(newShortcut.SetPath(this.ExePath));
-            ResultChecker.VerifyAndThrow(newShortcut.SetArguments(this.Arguments));
-
-            // Open the shortcut property store, set the AppUserModelId property
-            IPropertyStore newShortcutProperties = (IPropertyStore)newShortcut;
-
-            if (!string.IsNullOrEmpty(this.AppUserModelID))
-            {
-                using (PropVariant appId = new PropVariant(this.AppUserModelID))
-                {
-                    ResultChecker.VerifyAndThrow(newShortcutProperties.SetValue(SystemProperties.System.AppUserModel.ID, appId));
-                    ResultChecker.VerifyAndThrow(newShortcutProperties.Commit());
-                }
-            }
-
-            // Commit the shortcut to disk
-            IPersistFile newShortcutSave = (IPersistFile)newShortcut;
-            ResultChecker.VerifyAndThrow(newShortcutSave.Save(this.ShortcutPath, true));
-        }
 
     }
 }
