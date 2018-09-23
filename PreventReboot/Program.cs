@@ -115,6 +115,27 @@ namespace PreventReboot
             return result;
         }
 
+        public static string generateDefaultAppUserModelID()
+        {
+            // https://docs.microsoft.com/it-it/windows/desktop/shell/appids
+            // CompanyName.ProductName.SubProduct.VersionInformation
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            AssemblyName assemName = assembly.GetName();
+
+            //AssemblyCompany
+            string assemblyCompany = ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCompanyAttribute))).Company;
+            //AssemblyProduct
+            string assemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
+            //Version
+            string major = assemName.Version.Major.ToString();
+            string minor = assemName.Version.Minor.ToString();
+            string build = assemName.Version.Build.ToString();
+            string revision = assemName.Version.Revision.ToString();
+
+            return $"{assemblyCompany}.{assemblyProduct}.{major}.{minor}.{build}.{revision}";
+        }
+
         internal static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args)
         {
             Exception ex = (Exception)args.ExceptionObject;

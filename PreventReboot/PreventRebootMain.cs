@@ -45,6 +45,12 @@ namespace PreventReboot
                 //Console.WriteLine($"path       : {path}");
                 //Console.WriteLine($"name       : {exeFullPathFileName}");
 
+                // create shortcut
+                ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s");
+                shortcut.AppUserModelID = Program.generateDefaultAppUserModelID();
+                shortcut.create();
+
+                // regist task scheduler
                 TimeSpan span = TimeSpan.FromHours(1);
                 Task task = taskService.Execute(exeFullPathFileName).WithArguments("-s").AtLogon().RepeatingEvery(span).AsTask(D_PREVENT_REBOOT_TASK);
 
@@ -83,6 +89,11 @@ namespace PreventReboot
             int result = 0;
             Console.WriteLine("Start Uninstall..");
             this.withThrowExceptionIfPermissionDeneed();
+
+            // delete shortcut
+            string exeFullPathFileName = Process.GetCurrentProcess().MainModule.FileName;
+            ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s");
+            shortcut.delete();
 
             if (!isTargetTask())
             {
@@ -149,6 +160,11 @@ namespace PreventReboot
             // 再起動マネージャーの使用を禁止する
             RegistryCheckWriter<int>.set(accesser, RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\Installer",
                 @"DisableAutomaticApplicationShutdown", RegistryValueKind.DWord, 1);
+
+            // Notification
+            string appUserModelID = Program.generateDefaultAppUserModelID();
+            var notification = new WindowsNotification(appUserModelID);
+            notification.Show("TEST");
 
             return result;
         }
