@@ -52,7 +52,7 @@ deploy:
     auth_token:
       secure: xDUB9jmTodzcvy1twsTYQ8RtANSfUvcFyOfc8df0ut/nwFdiWWS4hlOBqnxz8J/3
 
-    release: $(APPVEYOR_BUILD_VERSION)
+    #release: $(APPVEYOR_BUILD_VERSION)
     description: It was automatically deployed by AppVeyor CI.
 
     draft: false
