@@ -15,7 +15,7 @@ configuration:
 before_build:
 
 build:
-  project: PreventReboot/PreventReboot.sln
+  project: PreventReboot.sln
 
 test_script:
 
