@@ -37,14 +37,14 @@ after_test:
 
 artifacts:
   - path: PreventReboot\bin\$(CONFIGURATION)\PreventReboot.exe
-    name: 'PreventReboot-$(VERSION).zip'
+    name: 'PreventReboot-$($env:VERSION).zip'
 
 
 before_deploy:
 
 deploy:
   - provider: GitHub
-    release: 'PreventReboot-$(VERSION)'
+    release: 'PreventReboot-$($env:VERSION)'
     force_update: true
 
     on:
