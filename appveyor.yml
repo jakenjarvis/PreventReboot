@@ -10,6 +10,7 @@ configuration:
   - Release
 
 before_build:
+  - nuget restore PreventReboot.sln
 
 build:
   project: PreventReboot.sln
