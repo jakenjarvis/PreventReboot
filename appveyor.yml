@@ -1,0 +1,23 @@
+version: '{build}'
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      GENERATOR: "Visual Studio 15 2017"
+
+platform:
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+before_build:
+
+build:
+  project: PreventReboot/PreventReboot.sln
+
+test_script:
+
+after_test:
+
