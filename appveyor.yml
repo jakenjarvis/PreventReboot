@@ -30,7 +30,7 @@ build:
   project: PreventReboot.sln
 
 after_build:
-  - ps: 7z a 'PreventReboot-$($env:APPVEYOR_BUILD_VERSION).zip' 'PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe'
+  - ps: 7z a -tzip "PreventReboot-$($env:APPVEYOR_BUILD_VERSION).zip" "PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe"
 
 before_test:
 
