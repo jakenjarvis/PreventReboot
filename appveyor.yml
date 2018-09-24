@@ -9,7 +9,9 @@ init:
         Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_BRANCH)-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
 
-  - echo $VERSION
+  - ps: >-
+      echo "$($env:VERSION)"
+      echo "$($env:APPVEYOR_BUILD_VERSION)"
 
 version: '{build}'
 
@@ -39,14 +41,14 @@ after_test:
 
 artifacts:
   - path: PreventReboot\bin\$(CONFIGURATION)\PreventReboot.exe
-    name: 'PreventReboot-$VERSION.zip'
+    name: 'PreventReboot-$APPVEYOR_BUILD_VERSION.zip'
 
 
 before_deploy:
 
 deploy:
   - provider: GitHub
-    release: $VERSION
+    release: $APPVEYOR_BUILD_VERSION
     force_update: true
 
     on:
