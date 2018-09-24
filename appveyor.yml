@@ -1,3 +1,14 @@
+init:
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+      }
+      else
+      {
+        Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_BRANCH)-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      }
+
 version: '{build}'
 
 environment:
@@ -15,11 +26,33 @@ before_build:
 build:
   project: PreventReboot.sln
 
+after_build:
+
+before_test:
+
 test_script:
 
 after_test:
 
+
 artifacts:
-  - path: PreventReboot\bin\Release\PreventReboot.exe
-    name: 'PreventReboot-$(APPVEYOR_REPO_TAG_NAME).zip'
+  - path: PreventReboot\bin\$(CONFIGURATION)\PreventReboot.exe
+    name: 'PreventReboot-$(VERSION).zip'
+
+
+before_deploy:
+
+deploy:
+  - provider: GitHub
+    release: 'PreventReboot-$(VERSION)'
+    force_update: true
+
+    on:
+      branch: master
+      appveyor_repo_tag: true
+
+    auth_token:
+      secure: xDUB9jmTodzcvy1twsTYQ8RtANSfUvcFyOfc8df0ut/nwFdiWWS4hlOBqnxz8J/3
+
+after_deploy:
 
