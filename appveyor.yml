@@ -40,14 +40,14 @@ after_test:
 
 artifacts:
   - path: PreventReboot\bin\$(CONFIGURATION)\PreventReboot.exe
-    name: 'PreventReboot-$APPVEYOR_BUILD_VERSION.zip'
+    name: 'PreventReboot-$(APPVEYOR_BUILD_VERSION).zip'
 
 
 before_deploy:
 
 deploy:
   - provider: GitHub
-    release: $APPVEYOR_BUILD_VERSION
+    release: $(APPVEYOR_BUILD_VERSION)
     force_update: true
 
     on:
