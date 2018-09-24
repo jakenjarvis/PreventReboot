@@ -20,8 +20,9 @@ environment:
       GENERATOR: "Visual Studio 15 2017"
 
 configuration:
-  - Debug
+  #- Debug
   - Release
+
 
 before_build:
   - nuget restore PreventReboot.sln
@@ -31,6 +32,7 @@ build:
 
 after_build:
   - ps: 7z a -tzip "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($env:CONFIGURATION).zip" "PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe"
+
 
 before_test:
 
@@ -42,19 +44,24 @@ after_test:
 artifacts:
   - path: PreventReboot-$(APPVEYOR_BUILD_VERSION)-$(CONFIGURATION).zip
 
+
 before_deploy:
 
 deploy:
   - provider: GitHub
+    auth_token:
+      secure: xDUB9jmTodzcvy1twsTYQ8RtANSfUvcFyOfc8df0ut/nwFdiWWS4hlOBqnxz8J/3
+
     release: $(APPVEYOR_BUILD_VERSION)
+    description: It was automatically deployed by AppVeyor CI.
+
+    draft: false
+    prerelease: false
     force_update: true
 
     on:
-      #branch: master
+      branch: master
       appveyor_repo_tag: true
-
-    auth_token:
-      secure: xDUB9jmTodzcvy1twsTYQ8RtANSfUvcFyOfc8df0ut/nwFdiWWS4hlOBqnxz8J/3
 
 after_deploy:
 
