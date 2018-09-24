@@ -10,7 +10,6 @@ init:
       }
 
   - ps: >-
-      echo "$($env:VERSION)"
       echo "$($env:APPVEYOR_BUILD_VERSION)"
 
 version: '{build}'
