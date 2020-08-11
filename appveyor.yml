@@ -1,25 +1,29 @@
 init:
-  - ps: >-
-      if ($env:APPVEYOR_REPO_TAG -eq "true")
-      {
-        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
-      }
-      else
-      {
-        Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_BRANCH)-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
-      }
+  - ps: |
+      echo "$env:APPVEYOR_REPO_TAG_NAME"
+      $defVersion = "$env:APPVEYOR_REPO_TAG_NAME" -replace "[v]?(\d{1,}[.]\d{1,}[.]\d{1,})([.]\d{1,})?","`$1"
+      echo "$defVersion"
 
-  - ps: >-
-      echo "$($env:APPVEYOR_BUILD_VERSION)"
+      $defAssemblyVersion = $defVersion + "." + "$env:APPVEYOR_BUILD_NUMBER"
+      echo "$defAssemblyVersion"
+      Update-AppveyorBuild -Version "$defAssemblyVersion"
+
+      $informationalVersion = "$($env:APPVEYOR_REPO_BRANCH)-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      echo "$informationalVersion"
+
+      $artifactZipName = "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($informationalVersion)-$($env:CONFIGURATION).zip"
+      echo "$artifactZipName"
 
 version: '{build}'
+
+skip_non_tags: true
 
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}-{$informationalVersion}"
 
 environment:
   matrix:
@@ -30,7 +34,6 @@ configuration:
   #- Debug
   - Release
 
-
 before_build:
   - nuget restore PreventReboot.sln
 
@@ -40,7 +43,7 @@ build:
 after_build:
   - ps: mkdir publish
   - ps: copy "PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe" publish
-  - ps: 7z a -tzip "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($env:CONFIGURATION).zip" ".\publish\*"
+  - ps: 7z a -tzip "$artifactZipName" ".\publish\*"
 
 before_test:
 
@@ -50,15 +53,14 @@ after_test:
 
 
 artifacts:
-  - path: PreventReboot-$(APPVEYOR_BUILD_VERSION)-$(CONFIGURATION).zip
-
+  - path: PreventReboot-*.zip
 
 before_deploy:
 
 deploy:
   - provider: GitHub
     auth_token:
-      secure: xDUB9jmTodzcvy1twsTYQ8RtANSfUvcFyOfc8df0ut/nwFdiWWS4hlOBqnxz8J/3
+      secure: kCCkxLoVdy73Sxdyyl+5XxS72cvKFw/oOOfIs+GFIL1Pj7wtmFvNUETXxAofgwxT
 
     #release: $(APPVEYOR_BUILD_VERSION)
     description: It was automatically deployed by AppVeyor CI.
