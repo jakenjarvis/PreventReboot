@@ -141,16 +141,26 @@ namespace PreventReboot
 
     public class ShortcutCreator
     {
+
+        public enum TargetSpecialFolder
+        {
+            Programs = Environment.SpecialFolder.Programs,
+            CommonPrograms = Environment.SpecialFolder.CommonPrograms
+        }
+
         public string ExePath { get; set; }
         public string Arguments { get; set; }
         public string AppUserModelID { get; set; }
         public string ShortcutPath { get; set; }
 
-        public ShortcutCreator(string exePath, string arguments, string appUserModelID = "")
+        public TargetSpecialFolder TargetFolder { get; set; }
+
+        public ShortcutCreator(string exePath, string arguments, TargetSpecialFolder targetFolder = TargetSpecialFolder.Programs, string appUserModelID = "")
         {
             this.ExePath = exePath;
             this.Arguments = arguments;
             this.AppUserModelID = appUserModelID;
+            this.TargetFolder = targetFolder;
         }
 
         public string generateDefaultLinkPath()
@@ -167,7 +177,8 @@ namespace PreventReboot
 
         public string generateLinkPath(string folder, string title)
         {
-            string programsStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+            Environment.SpecialFolder target = (Environment.SpecialFolder)Enum.ToObject(typeof(Environment.SpecialFolder), (int)this.TargetFolder);
+            string programsStartMenu = Environment.GetFolderPath(target);
             return Path.Combine(programsStartMenu, folder, title + ".lnk");
         }
 

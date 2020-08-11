@@ -37,18 +37,22 @@ namespace PreventReboot
                 throw new InvalidOperationException("Task has already been setup. Please uninstall first.");
             }
 
+            // TODO: Registry save (Only on first run)
+
+            // create shortcut
+            //string path = AppDomain.CurrentDomain.BaseDirectory;
+            string exeFullPathFileName = Process.GetCurrentProcess().MainModule.FileName;
+            //Console.WriteLine($"path       : {path}");
+            //Console.WriteLine($"name       : {exeFullPathFileName}");
+
+            // create shortcut
+            ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s", ShortcutCreator.TargetSpecialFolder.CommonPrograms);
+            shortcut.AppUserModelID = Program.generateDefaultAppUserModelID();
+            shortcut.create();
+
+            // create task
             using (TaskService taskService = new TaskService())
             {
-                //string path = AppDomain.CurrentDomain.BaseDirectory;
-                string exeFullPathFileName = Process.GetCurrentProcess().MainModule.FileName;
-                //Console.WriteLine($"path       : {path}");
-                //Console.WriteLine($"name       : {exeFullPathFileName}");
-
-                // create shortcut
-                ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s");
-                shortcut.AppUserModelID = Program.generateDefaultAppUserModelID();
-                shortcut.create();
-
                 // regist task scheduler
                 TimeSpan span = TimeSpan.FromHours(1);
                 Task task = taskService.Execute(exeFullPathFileName).WithArguments("-s").AtLogon().RepeatingEvery(span).AsTask(D_PREVENT_REBOOT_TASK);
@@ -78,8 +82,6 @@ namespace PreventReboot
                 task.RegisterChanges();
             }
 
-            //new TaskService().AddTask("Memo", new DailyTrigger { DaysInterval = 3 }, new ExecAction("notepad.exe", null, null));
-
             return result;
         }
 
@@ -89,19 +91,20 @@ namespace PreventReboot
             Console.WriteLine("Start Uninstall..");
             this.withThrowExceptionIfPermissionDeneed();
 
+            // TODO: Registry restore
+
             // delete shortcut
             string exeFullPathFileName = Process.GetCurrentProcess().MainModule.FileName;
-            ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s");
+            ShortcutCreator shortcut = new ShortcutCreator(exeFullPathFileName, "-s", ShortcutCreator.TargetSpecialFolder.CommonPrograms);
             shortcut.delete();
 
-            if (!isTargetTask())
+            // delete task
+            if (isTargetTask())
             {
-                throw new InvalidOperationException("Task does not exist. It has already been uninstalled.");
-            }
-
-            using (TaskService taskService = new TaskService())
-            {
-                taskService.RootFolder.DeleteTask(D_PREVENT_REBOOT_TASK);
+                using (TaskService taskService = new TaskService())
+                {
+                    taskService.RootFolder.DeleteTask(D_PREVENT_REBOOT_TASK);
+                }
             }
 
             return result;
@@ -160,6 +163,7 @@ namespace PreventReboot
             RegistryCheckWriter<int>.set(accesser, RegistryHive.LocalMachine, @"SOFTWARE\Policies\Microsoft\Windows\Installer",
                 @"DisableAutomaticApplicationShutdown", RegistryValueKind.DWord, 1);
 
+            // TODO; Notifications cannot be displayed by calling from Task Scheduler.
             // Notification
             string appUserModelID = Program.generateDefaultAppUserModelID();
             var notification = new WindowsNotification(appUserModelID);
