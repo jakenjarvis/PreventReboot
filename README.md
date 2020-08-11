@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/ebq0byc0f61surk4?svg=true)](https://ci.appveyor.com/project/jakenjarvis/preventreboot) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build status](https://ci.appveyor.com/api/projects/status/d0n82hfgqkqkaqp7?svg=true)](https://ci.appveyor.com/project/jakenjarvis/preventreboot) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # PreventReboot
 This program prevents reboot during login by updating the ActiveTime of Windows10 on a regular basis.
