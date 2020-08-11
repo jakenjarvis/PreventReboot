@@ -10,7 +10,10 @@ namespace PreventReboot
 {
     internal class Program
     {
-        private static CommandLineApplication app = new CommandLineApplication(throwOnUnexpectedArg: false);
+        private static CommandLineApplication app = new CommandLineApplication()
+        {
+            UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
+        };
         private static bool debugMode = false;
         private static bool showHelpMessage = false;
 
