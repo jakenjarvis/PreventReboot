@@ -14,6 +14,9 @@ init:
       $artifactZipName = "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($informationalVersion)-$($env:CONFIGURATION).zip"
       echo "$artifactZipName"
 
+      $env:assembly_informational_version="$($defAssemblyVersion)-$($informationalVersion)"
+      echo "$env:assembly_informational_version"
+
 version: '{build}'
 
 skip_non_tags: true
@@ -23,7 +26,7 @@ assembly_info:
   file: '**\AssemblyInfo.*'
   assembly_version: "{version}"
   assembly_file_version: "{version}"
-  assembly_informational_version: "{version}-{$informationalVersion}"
+  assembly_informational_version: $(assembly_informational_version)
 
 environment:
   matrix:
