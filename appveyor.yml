@@ -23,8 +23,8 @@ assembly_info:
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      GENERATOR: "Visual Studio 15 2017"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      GENERATOR: "Visual Studio 16 2019"
 
 configuration:
   #- Debug
@@ -38,8 +38,9 @@ build:
   project: PreventReboot.sln
 
 after_build:
-  - ps: 7z a -tzip "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($env:CONFIGURATION).zip" "PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe"
-
+  - ps: mkdir publish
+  - ps: copy "PreventReboot\bin\$($env:CONFIGURATION)\PreventReboot.exe" publish
+  - ps: 7z a -tzip "PreventReboot-$($env:APPVEYOR_BUILD_VERSION)-$($env:CONFIGURATION).zip" ".\publish\*"
 
 before_test:
 
